@@ -18,13 +18,16 @@ jobs:
           gradle-version: '8.7'
       - name: Aceitar licenças do SDK
         run: yes | sdkmanager --licenses || true
+      - name: Descompactar projeto
+        run: |
+          ZIP=$(find . -name 'SoulOfDarkness_HTML_APK.zip' | head -n 1)
+          echo "Zip encontrado: $ZIP"
+          unzip -q "$ZIP" -d /tmp/proj
       - name: Build debug APK
         run: |
-          DIR=$(dirname "$(find . -name settings.gradle -not -path './.git/*' | head -n 1)")
-          echo "Projeto encontrado em: $DIR"
-          cd "$DIR"
+          cd /tmp/proj/SoulOfDarkness_HTML_APK
           gradle assembleDebug --no-daemon
       - uses: actions/upload-artifact@v4
         with:
           name: SoulOfDarkness-debug-apk
-          path: '**/app-debug.apk'
+          path: /tmp/proj/SoulOfDarkness_HTML_APK/app/build/outputs/apk/debug/app-debug.apk
