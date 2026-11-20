@@ -1,0 +1,36 @@
+name: Build APK
+on:
+  push:
+    branches: [ main, master ]
+  workflow_dispatch:
+
+jobs:
+  apk:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Localizar projeto
+        run: |
+          if [ -f settings.gradle ]; then
+            P=.
+          else
+            Z=$(ls *.zip | head -n1)
+            unzip -q -o "$Z" -d _proj
+            P=$(dirname "$(find _proj -name settings.gradle | head -n1)")
+          fi
+          echo "P=$P" >> $GITHUB_ENV
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '17'
+      - uses: android-actions/setup-android@v3
+      - uses: gradle/actions/setup-gradle@v4
+        with:
+          gradle-version: '8.7'
+      - name: Build debug APK
+        run: gradle assembleDebug --no-daemon
+        working-directory: ${{ env.P }}
+      - uses: actions/upload-artifact@v4
+        with:
+          name: SoulOfDarkness-debug-apk
+          path: ${{ env.P }}/app/build/outputs/apk/debug/app-debug.apk
