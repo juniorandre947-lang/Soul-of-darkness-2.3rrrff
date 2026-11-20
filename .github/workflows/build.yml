@@ -20,14 +20,15 @@ jobs:
         run: yes | sdkmanager --licenses || true
       - name: Descompactar projeto
         run: |
-          ZIP=$(find . -name 'SoulOfDarkness_HTML_APK.zip' | head -n 1)
+          ZIP=$(find . -name 'SoulOfDarkness_Hibrido.zip' | head -n 1)
           echo "Zip encontrado: $ZIP"
           unzip -q "$ZIP" -d /tmp/proj
+          ls /tmp/proj
       - name: Build debug APK
         run: |
-          cd /tmp/proj/SoulOfDarkness_HTML_APK
+          cd /tmp/proj/SoulOfDarkness_Hibrido
           gradle assembleDebug --no-daemon
       - uses: actions/upload-artifact@v4
         with:
-          name: SoulOfDarkness-debug-apk
-          path: /tmp/proj/SoulOfDarkness_HTML_APK/app/build/outputs/apk/debug/app-debug.apk
+          name: SoulOfDarkness-hibrido-apk
+          path: /tmp/proj/SoulOfDarkness_Hibrido/app/build/outputs/apk/debug/app-debug.apk
